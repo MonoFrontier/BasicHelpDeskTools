@@ -1,0 +1,84 @@
+-----Explaination-----
+
+#Copy User A groups to User B MemberOf and Exclude select groups#
+
+------Guide------
+
+Set-ExecutionPolicy Unrestricted -force
+Import-Module ActiveDirectory
+
+#Create a Variable for Group to exclude#
+##Use String, wildcard allowed##
+$group1 = "Domain A*"
+$group2 = "Everyo*"
+
+Clear-Host
+#Command Window will prompt input for Source User#
+Write-Host "Input Username of User whose groups you would like to copy" -foregroundcolor Green -backgroundcolor Black
+$SourceUser = Read-Host
+"`n"
+
+#Command Window will prompt input for Target User#
+Write-Host "Input Username of User who will receive: $SourceUser's groups" -foregroundcolor Green -backgroundcolor Black
+$DestUser = Read-Host
+"`n"
+
+#Extract Source User MemberOf#
+$SourceGroups = Get-ADUser $SourceUser -Property MemberOf | ForEach-Object {
+$_.MemberOf | Get-ADGroup | select Name -ExpandProperty Name | sort name | Where-Object {
+    (
+    #Exclude group(s) to not be included in list to add to Target User MemberOf#
+    ##If a new variable is added above for Group to exclude##
+    ##Add New Line Here using existing format##
+    $_.name -notlike $group1 -and
+    $_.name -notlike $group2
+
+    )
+    }
+}
+
+#Adding groups from Source User to Target User#
+ForEach ($Group in $SourceGroups)
+{
+Add-ADGroupMember $Group -Members $DestUser
+Write-Host "Adding $Group to $DestUser's Account" -foregroundcolor Cyan -backgroundcolor Black
+}
+"`n"
+
+#Command Window will display changes to target user memberof#
+Write-Host "Groups that were successfully added to $DestUser Member-Of AFTER script"
+Get-ADUser $DestUser -Property MemberOf | ForEach-Object {
+$_.MemberOf | Get-ADGroup | select Name -ExpandProperty Name | sort name
+}
+
+-----Full Example----
+
+$group1 = "Domain A*"
+$group2 = "Everyo*"
+
+Write-Host "Input Username of User whose groups you would like to copy" -foregroundcolor Green -backgroundcolor Black
+$SourceUser = Read-Host
+"`n"
+Write-Host "Input Username of User who will receive: $SourceUser's groups" -foregroundcolor Green -backgroundcolor Black
+$DestUser = Read-Host
+"`n"
+$SourceGroups = Get-ADUser $SourceUser -Property MemberOf | ForEach-Object {
+$_.MemberOf | Get-ADGroup | select Name -ExpandProperty Name | sort name | Where-Object {
+    (
+    $_.name -notlike $group1 -and
+    $_.name -notlike $group2
+    )
+    }
+}
+ForEach ($Group in $SourceGroups)
+{
+Add-ADGroupMember $Group -Members $DestUser
+Write-Host "Adding $Group to $DestUser's Account" -foregroundcolor Cyan -backgroundcolor Black
+}
+"`n"
+Write-Host "Groups that were successfully added to $DestUser Member-Of AFTER script"
+Get-ADUser $DestUser -Property MemberOf | ForEach-Object {
+$_.MemberOf | Get-ADGroup | select Name -ExpandProperty Name | sort name
+}
+
+-----End-----
