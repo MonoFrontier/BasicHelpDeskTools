@@ -1,0 +1,49 @@
+-----Find & Unlock AD Accounts-----
+#Query AD for Locked Users#
+Search-ADAccount -LockedOut | Select-Object Name, SamAccountName,UserPrincipalName, LastLogonDate
+
+#Unlock specified User#
+Unlock-ADAccount -Identity %username%
+
+#Mass AD User Unlock in specified OU#
+Search-ADAccount -SearchBase 'OU=,OU=,DC=Domain,DC=local' -LockedOut | Unlock-ADAccount
+
+-----Query User and Get Password Expiry Date-----
+
+#Scope's to a single user#
+Get-ADUser -Identity '%username%' –Properties “DisplayName”,“msDS-UserPasswordExpiryTimeComputed” | Select-Object -Property “Displayname”,@{Name=“ExpiryDate”;Expression={[datetime]::FromFileTime($_.“msDS-UserPasswordExpiryTimeComputed”)}}
+
+#Impacts entire AD tree#
+Get-ADUser -filter {Enabled -eq $True -and PasswordNeverExpires -eq $False} –Properties “DisplayName”,“msDS-UserPasswordExpiryTimeComputed” | Select-Object -Property “Displayname”,@{Name=“ExpiryDate”;Expression={[datetime]::FromFileTime($_.“msDS-UserPasswordExpiryTimeComputed”)}}
+
+-----Query User and Selecting specific properties-----
+
+#Get User Canonicalname#
+Get-ADUser -Filter { Name -like "%fullname%" } -Properties canonicalname | Select-Object canonicalname,name,samaccountname,UserPrincipalName, Enabled | Sort-Object name
+
+#Query Ad User by Job Title(s)#
+get-aduser -Filter {Title -like "%jobtitle%" -or Title -like "%jobtitle%"} -SearchBase 'OU=,OU=,DC=Domain,DC=Local' -Properties title | select Name,samaccountname,title | Sort-Object -Property name | Export-Csv '\\server\share'
+
+#Query Ad User by Description(s)#
+get-aduser -Filter {Description -like "%description%"} -SearchBase 'OU=,OU=,DC=Domain,DC=Local' | select name,samaccountname | FL
+
+#Query User Member OF#
+Get-ADPrincipalGroupMembership %username% | Select Name | Sort Name
+
+-----Query AD Groups-----
+
+#Query AD for Group#
+Get-ADGroup -Filter {Name -Like  "%groupname%"} | Select-Object Name,SamAccountName | Sort-Object -Property Name
+
+-----Query AD Group Members-----
+
+#Query AD Group Memberships#
+Get-ADGroupMember -Identity "%groupname%" | Select-Object Name,SamAccountName | Sort-Object -Property SamAccountName
+
+-----Get/Set User Ad Expriation-----
+
+#Set AD User Expiration#
+Set-ADAccountExpiration -Identity %username% -DateTime '04/26/2019 17:00:00'
+
+#Get AD User Expiration#
+Get-ADUser -Identity %username% -Properties AccountExpirationDate | Select-Object -Property SamAccountName, AccountExpirationDate
