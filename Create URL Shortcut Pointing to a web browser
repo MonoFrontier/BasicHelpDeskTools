@@ -1,0 +1,55 @@
+Chrome
+-----Explaination-----
+
+You want to be able to open up certain links as URL shortcuts from the desktop
+However, that URL works best in Browser & you don't want to change your default browser
+You could manually create a shortcut to point to another browser but this method is much more simplified
+
+-----Guide-----
+
+$BrowserPath = (Get-ItemProperty -LiteralPath 'HKLM:\Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe' -ErrorAction Stop).'(default)'
+$targetfile = "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe"
+
+#Update 'Website' to the desired name
+$shortcutfile = "C:\Users\Public\Desktop\Website - Chrome.lnk"
+
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $TargetFile
+
+#Input the desired URL
+$Shortcut.Arguments = "URL"
+
+$Shortcut.WorkingDirectory = "${env:ProgramFiles(x86)}\Google\Chrome\Application"
+$Shortcut.IconLocation = $browserpath
+$Shortcut.Save()
+
+-----End-----
+
+
+IE
+-----Explaination-----
+
+Create URL Shortcut
+
+
+-----Guide-----
+
+$targetfile = "$env:programfiles\Internet Explorer\iexplore.exe"
+
+#Update 'shortcut' to desired name
+$shortcutfile = "C:\Users\Public\Desktop\shortcut.lnk"
+
+$WScriptShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+$Shortcut.TargetPath = $TargetFile
+
+#update 'URL' to desired URL
+$Shortcut.Arguments = "URL"
+
+$Shortcut.WorkingDirectory = "$env:programfiles\Internet Explorer"
+$Shortcut.WindowsStyle = 1
+$Shortcut.IconLocation = "iexplorer.exe, 0"
+$Shortcut.Save()
+
+-----End-----
