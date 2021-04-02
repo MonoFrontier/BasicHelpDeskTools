@@ -1,0 +1,20 @@
+-----Explaination-----
+#Log onto Exchange 2013 EMS#
+#Log onto Office 365 EMS#
+
+#Must Launch Powershell with 'Run As Administrator'
+
+-----Guide-----
+
+#Establish connection to Exchange Core commands
+Set-ExecutionPolicy RemoteSigned
+$UserCredential = Get-Credential
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://exchange/PowerShell/ -Authentication Kerberos -Credential $UserCredential
+
+#Activate and Connect EMS
+Import-Pssession $Session
+
+#Deactivate and Disconnect EMS
+Remove-Pssession $session
+
+-----End-----
