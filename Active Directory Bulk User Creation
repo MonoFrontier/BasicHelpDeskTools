@@ -1,0 +1,84 @@
+-----Explaination-----
+
+#Create User(s) using CSV Import
+#Use the "sample_csv.csv" for properties#
+#You could also create your own CSV using the properties specified below under "$user.%property%"#
+
+-----Guide-----
+
+#Use the sample_csv.csv as a template file when building import file#
+Clear-Host
+
+#Import active directory module for running AD cmdlets
+Import-Module activedirectory
+
+  
+#Store the data from ADUsers.csv in the $ADUsers variable
+$ADUsers = Import-csv \\server\share\file.csv
+
+
+#Loop through each row containing user details in the CSV file
+foreach ($User in $ADUsers)
+{
+	#Read user data from each field in each row and assign the data to a variable as below
+		
+	$Username 	= $User.username
+	$Password 	= $User.password
+	$Firstname 	= $User.firstname
+    $middlename = $User.initials
+	$Lastname 	= $User.lastname
+    $SAM        = $user.samaccountname
+	$OU 		= $User.ou #This field refers to the OU the user account is to be created in
+    $email      = $User.email
+    $description = $User.description
+    $telephone  = $User.telephone
+    $ipphone    = $User.ipphone
+    $jobtitle   = $User.jobtitle
+    $company    = $User.company
+    $department = $User.department
+    $manager = $user.manager
+
+
+	#Check to see if the user already exists in AD
+	if (Get-ADUser -F {SamAccountName -eq $Username})
+	{
+		 #If user does exist, give a warning
+		 Write-Warning "A user account with username $Username already exist in Active Directory." -foregroundcolor Red -backgroundcolor Black
+	}
+	else
+	{
+		#User does not exist then proceed to create the new user account
+		
+        #Account will be created in the OU provided by the $OU variable read from the CSV file
+		New-ADUser `
+            -SamAccountName $Username `
+            -UserPrincipalName "$Username@domain.local" `
+            -Name "$Lastname, $Firstname" `
+            -GivenName $Firstname `
+            -Surname $Lastname `
+            -Initials $middlename `
+            -Enabled $True `
+            -DisplayName "$Lastname, $Firstname" `
+            -Path $OU `
+            -OfficePhone $telephone `
+            -EmailAddress $email `
+            -HomeDrive "H" `
+            -HomeDirectory "\\server\dfs\home\$username" `
+            -Title $jobtitle `
+            -AccountPassword (convertto-securestring $Password -AsPlainText -Force) -ChangePasswordAtLogon $True
+    }
+
+}
+
+#Fill in IP Phone Attribute
+Set-Aduser -Identity $Username -Replace @{IPPhone = $ipphone}
+
+
+#Generate user network folder
+Set-location '\\server\dfs\HOME'
+
+                ForEach ($User in $ADUsers) { 
+                    New-Item $User.username -type directory 
+                }  
+
+-----End-----
