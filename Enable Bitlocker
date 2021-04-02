@@ -1,0 +1,17 @@
+#General Enable Bitlocker script#
+
+-----Guide-----
+
+#Step 1.0-Request OS#    
+#Step 2.0-Request Proection status#    
+#Step 2.1-Only run when Step 2.0 succeeds, enable protection#    
+#Step 2.a-Only run when Step 2.0 fails, stop script#    
+#Step 1.a-Only run when Step 1.0 fails, stop script#
+
+#Step 1.0 If((Get-WmiObject win32_operatingsystem).Caption -like '*Windows 10*')
+#Step 2.0   {If((Get-BitLockerVolume).ProtectionStatus -ne 'On')
+#Step 2.1       {Enable-BitLocker -MountPoint 'c:' -EncryptionMethod XtsAes128 -UsedSpaceOnly -RecoveryPasswordProtector}
+#Step 2.a   Else{'BitlockerAlreadyEnabled'}}
+#Step 1.a Else{'NotWindows10'}
+
+-----End-----
