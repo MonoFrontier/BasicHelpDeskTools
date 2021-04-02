@@ -1,0 +1,16 @@
+-----Explaination-----
+
+If you want to grab a list of folders or files, or both, in a directory you can do that with the below commands.
+This could be used for auditing content or auditing permissions.
+
+-----Grab Folders Only-----
+
+set-location "\\share\directory"
+Get-ChildItem -Recurse | ?{$_.PSIsContainer} | Select-Object FullName | Export-Csv "\\Client\Export.csv"
+
+-----Grab Files and Folders-----
+
+set-location "\\share\directory"
+Get-ChildItem -Recurse | ?{$_.Fullname} | Select-Object FullName | Export-Csv "\\Client\Export.csv"
+
+-----end-----
