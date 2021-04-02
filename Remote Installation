@@ -1,0 +1,28 @@
+-----Explaination-----
+
+Not all installs will work using this method
+The install will include a progression bar, this line is optional.
+The source location and install location should be the same ex. if source path is C:\temp\install.exe, then the destination path should also be C:\temp\install.exe (\\%hostname\c$\temp\install.exe)
+
+-----Guide-----
+
+#Develop progression bar, using this method the bar will increase#
+for ($percent=0; $percent -le 100; $percent++)
+    {
+        #Design Progresion Bar Description#
+        Write-Progress -Activity "Installing Application" -Status "Progress.." -PercentComplete $percent
+        
+          #Specify installer source path and client destination#
+          Copy-Item -Path 'C:\path\install.exe' -Destination '\\path\install.exe'
+            
+            Invoke-Command -ComputerName %hostname% -ScriptBlock {
+              #Initiate install and configure install command#
+              Start-Process 'C:\path\install.exe' -ArgumentList "/qn" -Wait
+    }
+}
+
+-----Notes-----
+
+"-ArgumentList" is required when using CMDlet functions i.e. "/qn" or "/s" etc.
+
+-----End-----
