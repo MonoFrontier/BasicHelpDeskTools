@@ -1,0 +1,73 @@
+-----Creating IF statements-----
+  To create an if statement you have to create a boolean process.
+  Example: If path A is blocked by path B is true, then junction to path C.
+
+  ---Scenario---
+  Let's say you have a list 100 workstations, you want to create a new directory on the client workstations and copy contents into it;
+  However, 40 of the workstations already have the new directory.  You don't want to re-organize and filter out the 40.
+  This is where you can utilize the "IF" statement.
+  
+  ---Let's start with some familization---
+  (!(Test-Path <path>)) = Path Does Not Exist? True or False
+  **"!" indicates a "NOT" Reference: http://www.neolisk.com/techblog/powershell-specialcharactersandtokens
+  ((Test-Path <path)) = Path Doest Exist? True or False
+  
+  ---Let's apply the above on your workstation---
+  Open Powershell or Powershell ISE, run the command above replacing <path> with any directory existing or not.
+  
+  ---Let's create a function---
+  Now that you get a feel for how it works, let's work on a creating the function based on the scenario.
+  
+  We want to create a directory and then copy contents into it.
+  We have many methods of performing this, a few examples are:
+  1.Robocopy
+  2.XCopy
+  3.Copy
+  4.Copy-Item
+  
+  Since, we're working with powershell we'll not talk about cmdlet Copy, XCopy, or Robocopy.
+  
+  Depending on how you configure your Copy-Item function you'd need to make sure the destination folder exists.
+  
+  Example:
+  Copy-Item -Path '\\server\share\folder\*' -Destination '\\client\path\folder'
+  
+  This requires that the <Dest> actually exists, therefore you'd need to run the next command prior to the above command.
+  New-Item -ItemType Directory '\\client\path\folder'
+  
+  To avoid a two-step process such as the above, you should configure your copy-item line as shown below
+  Copy-Item -Path '\\server\share\folder' -Destination '\\client\path\folder' -recurse
+  
+  Using "-recurse" it will copy all sub data files and folders, it will also generate the destination directory
+  
+  ---Using Else ---
+  Using an Else command is optional depending if you want feedback result or if you have additional functions to perform.
+  To simplify this example, we'll just create a feedback string.
+  
+  ---Example function by combining what we learned---
+  
+  ##
+  IF(!(Test-Path 'C:\Temp\Test')){
+    
+    Copy-Item -Path '\\Server\Share\Folder' -Destination 'C:\Temp\Test' -Recurse
+    
+    }
+  Else{'Directory already exists'}
+  ##
+  
+  ---Now let's complete the example function according to the scenario---
+  With the above command, you can just run it against your list of workstations without having to filter out the 40 workstations
+  that already contain the directory and content.
+  ##
+  $listofworkstations = Import-Csv 'C:\ListofWorkstations.csv'
+  foreach ($PC in $listofworkstations){
+  IF(!(Test-Path 'C:\Temp\Test')){   
+    Copy-Item -Path '\\Server\Share\Folder' -Destination 'C:\Temp\Test' -Recurse
+    }
+  Else{'Directory already exists'}
+  }
+  ##
+  
+  
+  
+-----End-----
