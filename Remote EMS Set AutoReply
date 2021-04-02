@@ -1,0 +1,21 @@
+-----Explaination-----
+
+Access User's Mailbox AutoReply
+
+-----Guide-----
+
+#Initiate connection to EMS#
+
+#Inquire User's Auto Reply State
+Get-MailboxAutoReplyConfiguration -Identity %user% | Select-Object -ExpandProperty AutoReplyState
+**For more Details, you can remove '| Select-Object -ExpandProperty AutoReplyState'**
+
+#Configure AutoReply for User
+Set-MailboxAutoReplyConfiguration -Identity %user% -AutoReplyState Scheduled -StartTime "06/02/2020 13:00:00" -EndTime "06/07/2020 07:00:00" -InternalMessage "Message" -ExternalMessage "Message"
+Or 
+Set-MailboxAutoReplyConfiguration -Identity %user% -AutoReplyState Enabled -InternalMessage "Message" -ExternalMessage "Message"
+
+#Disable AutoReply for User if not Scheduled
+Set-MailboxAutoReplyConfiguration -Identity %user% -AutoReplyState Disabled
+
+-----End-----
