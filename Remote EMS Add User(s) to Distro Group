@@ -1,0 +1,22 @@
+-----Explaination-----
+
+Access EMS and Add Users to Distribution Group
+
+-----Guide-----
+
+#Initiate connection to EMS#
+#Locate Distribution Group to add to#
+Add-DistributionGroupMember -identity "%GroupDisplayName%" -Member "%username%@%domain%" -BypassSecurityGroupManagerCheck
+
+-----Notes-----
+
+You can also do a bulk add of users by invoking 'foreach' command.
+i.e.
+
+$list = import-csv %file%
+foreach ($object in $list){
+  $username = $object.name
+  Add-DistributionGroupMember -identity "%GroupDisplayName%" -Member "$username@%domain%" -BypassSecurityGroupManagerCheck
+  }
+
+-----End-----
