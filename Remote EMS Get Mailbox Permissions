@@ -1,0 +1,38 @@
+-----Explaination-----
+
+Access EMS and review user's mailbox permissions
+
+-----Guide-----
+
+#Initiate connection to EMS#
+#View user's mailbox top level permissions#
+Get-MailboxFolderPermission -Identity %username%
+
+#View user's mailbox folder permissions#
+Get-MailboxFolderPermission -Identity %username%:\Calendar
+OR
+Get-MailboxFolderPermission -Identity "%username:Deleted Items"
+
+#Modify current permissions on mailbox#
+Set-MailboxFolderPermission -Identity %username%:\Calendar -user %username% -AccessRights %permission%
+
+#Assign a new user to the mailbox and set their permission#
+Add-MailboxFolderPermission -Identity %username%:\Calendar -user %username% -AccessRights %permission%
+
+-----Notes-----
+
+Different Levels of Exchange permissions
+Owner - Full Control.
+PublishingEditor - Can read,write,delete and move calendar entries from all members.
+Editor - Can read,write and move calendar entries from all members, can only write their own entries.
+PublishingAuthor - Can read and move calendar entries from all members.
+Author - Can read calendar entries from all members.
+NoneditingAuthor - Can read calendar entries from all members.
+Reviewer - Can view entries from members, but cannot read entries from members.
+Contributor - Only add entries.
+None - No Access.
+
+When assigning access to a mailbox root or sub folder(s), to allow a delegate to 
+delete target mailbox items you must assign them permissions to the target mailbox "Deleted Items" folder
+
+-----End----- 
