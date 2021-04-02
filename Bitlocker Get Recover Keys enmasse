@@ -1,0 +1,35 @@
+-----Explaination-----
+#Script will run in specified searchbase#
+#Workstations with recovery keys will be collected and encapsulated into a txt file#
+#All keys will be grabbed in no specific order#
+#Recommend storing keys in a secure vault i.e. KeePass#
+
+-----Guide-----
+
+#This step is not necessary if running from an server with delegated rights to AD#
+Import-Module ActiveDirectory
+
+#Modify the Search Base to suit your infrastructure#
+Get-ADComputer -Filter 'ObjectClass -eq "computer"' -SearchBase "OU=,DC=,DC=" | foreach-object {
+$Computer = $_.name
+
+#Leave values as is from here#
+$Computer_Object = Get-ADComputer -Filter {cn -eq $Computer} -Property msTPM-OwnerInformation, msTPM-TpmInformationForComputer
+if($Computer_Object -eq $null){
+Write-Host "Error"
+}
+$Bitlocker_Object = Get-ADObject -Filter {objectclass -eq 'msFVE-RecoveryInformation'} -SearchBase $Computer_Object.DistinguishedName -Properties 'msFVE-RecoveryPassword'
+if($Bitlocker_Object.'msFVE-RecoveryPassword'){
+$BitLocker_Key = $BitLocker_Object.'msFVE-RecoveryPassword'
+}else{
+$BitLocker_Key = "none"
+}
+$strToReport = $Computer + "," + $BitLocker_Key
+Write-Host $strToReport
+#Leave values as is to here#
+
+#Modify the path output and file name#
+$strToReport | out-file "\\path\file.txt" -append
+}
+
+-----End-----
