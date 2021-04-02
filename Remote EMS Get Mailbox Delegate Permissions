@@ -1,0 +1,25 @@
+-----Explaination-----
+
+Access EMS and review Mailbox Delegates and delegate Permissions
+
+-----Guide-----
+
+#Initiate connection to EMS#
+#Inquire Mailbox
+Get-MailboxPermission -Identity %mailbox% | Select-Object User,AccessRights,IsInherited,Deny | Where-Object {$_.User -Like "Domain\*"} | Sort-Object AccessRights | FT -AutoSize -Wrap
+**You can also export as CSV or Txt File using 'Export-CSV' or 'Out-File'**
+
+-----Notes-----
+
+Different Levels of Exchange permissions
+Owner - Full Control.
+PublishingEditor - Can read,write,delete and move calendar entries from all members.
+Editor - Can read,write and move calendar entries from all members, can only write their own entries.
+PublishingAuthor - Can read and move calendar entries from all members.
+Author - Can read calendar entries from all members.
+NoneditingAuthor - Can read calendar entries from all members.
+Reviewer - Can view entries from members, but cannot read entries from members.
+Contributor - Only add entries.
+None - No Access.
+
+-----End----- 
