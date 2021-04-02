@@ -1,0 +1,18 @@
+-----Explaination-----
+
+Access EMS and review a User's MemberOf properties
+
+-----Guide-----
+
+#Initiate connection to EMS#
+#Best to edit variables on a text editor then paste code into Powershell#
+#Or use Powershell ISE#
+
+$username = "%username%@%Domain%"
+Get-DistributionGroup | where { (Get-DistributionGroupMember $_.Name | foreach {$_.PrimarySmtpAddress}) -contains "$Username"} | Select Name,PrimarySmtpAddress | FT -AutoSize | Out-File C:\Temp\output.txt -append
+
+-----Notes-----
+
+Best to have the output display into a text file with append parameter for logging or auditing purposes.
+
+-----End-----
