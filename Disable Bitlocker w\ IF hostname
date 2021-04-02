@@ -1,0 +1,23 @@
+-----Explaination-----
+#This is meant for disabling Bitlocker on Desktops only#
+#The script can be ran using a CSV, you'll just have to add the parameter(s)#
+**This part is subjective and does not have exist**#-If you've named your workstations in such a way to easily identify if a laptopr or desktop#
+
+-----Guide-----
+#Step 1.0-Request a workstation's hostname#
+#Step 2.0-Request Bitlocker protection status#
+#Step 2.1-Only run when Step 2.0 succeeds, Obtain Bitlocker Volume & create a variable for the result#
+#Step 2.2-Followup to Step 2.1, Disable protection#
+#Step 2.a-Only run when Step 2.0 fails, stop script#
+#Step 1.a-Only run when Step 1.0 fails, stop script#
+
+Step 1.0    IF ((Get-WmiObject Win32_Computersystem).name -like 'hostname')
+Step 2.0    {If((Get-BitLockerVolume).ProtectionStatus -eq 'On')
+    {
+Step 2.1    Get-BitlockerVolume | select -expandproperty mountpoint | Set-Variable -Name "BLV"
+Step 2.2    Disable-BitLocker -MountPoint $BLV  
+    }
+Step 2.a    Else {'Bitlocker is not enabled'}}
+Step 1.a    Else {'Workstation is not a Desktop'}
+
+-----End-----
