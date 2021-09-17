@@ -1,0 +1,15 @@
+-----Explaination-----
+
+Manage Mailbox Forwarding
+
+-----Guide-----
+
+#Initiate connection to EMS#
+
+#Create Forwarding Configuration
+Set-Mailbox -Identity $username -DeliverToMailboxAndForward $false -ForwardingSMTPAddress "recipient@domain"
+
+#To Remove Forwarding, just update the forwarding address to "$null"
+Set-Mailbox -Identity $username -ForwardingSMTPAddress $null
+
+-----End-----
